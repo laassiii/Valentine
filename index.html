@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>For You ❤️</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:system-ui,-apple-system,sans-serif;
+}
+
+body{
+  overflow:hidden;
+  background:linear-gradient(135deg,#ff9ecf,#ffd6e8);
+  color:#222;
+}
+
+/* ===== Sections ===== */
+.section{
+  height:100vh;
+  width:100vw;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:28px;
+  position:absolute;
+  transition:.5s;
+}
+
+.hidden{
+  transform:translateY(100%);
+  opacity:0;
+  pointer-events:none;
+}
+
+.big{
+  font-size:26px;
+  font-weight:700;
+}
+
+.small{
+  opacity:.85;
+  margin-top:12px;
+}
+
+/* ===== Buttons ===== */
+button{
+  margin-top:26px;
+  padding:16px 30px;
+  border:none;
+  border-radius:40px;
+  font-size:18px;
+  font-weight:600;
+}
+
+.primary{background:#ff2d75;color:#fff;}
+.secondary{background:#fff;}
+
+/* ===== Heart Game ===== */
+#heart{
+  position:absolute;
+  font-size:48px;
+  cursor:pointer;
+}
+
+/* ===== Proposal ===== */
+.choice{
+  display:flex;
+  gap:18px;
+  margin-top:26px;
+}
+
+.shake{
+  animation:shake .15s 2;
+}
+@keyframes shake{
+  25%{transform:translateX(-4px)}
+  50%{transform:translateX(4px)}
+  75%{transform:translateX(-4px)}
+}
+
+/* ===== Confetti ===== */
+.confetti{
+  position:fixed;
+  font-size:22px;
+  animation:fall 2s linear forwards;
+}
+@keyframes fall{
+  to{
+    transform:translateY(110vh) rotate(360deg);
+    opacity:0;
+  }
+}
+
+/* ===== Poem animation ===== */
+.poem p{
+  opacity:0;
+  transform:translateY(10px);
+  animation:fadeLine .7s forwards;
+  margin:6px 0;
+  max-width:320px;
+}
+
+.poem p:nth-child(1){animation-delay:.4s}
+.poem p:nth-child(2){animation-delay:1s}
+.poem p:nth-child(3){animation-delay:1.8s}
+.poem p:nth-child(4){animation-delay:2.4s}
+.poem p:nth-child(5){animation-delay:3.2s}
+.poem p:nth-child(6){animation-delay:3.8s}
+.poem p:nth-child(7){animation-delay:4.4s}
+.poem p:nth-child(8){animation-delay:5.2s}
+.poem p:nth-child(9){animation-delay:5.8s}
+
+@keyframes fadeLine{
+  to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== Background Music ===== -->
+<audio id="bgm" src="music.mp3" loop></audio>
+
+
+<!-- ===== Screen 1 ===== -->
+<div id="start" class="section">
+  <div class="big">Quick question. No pressure.</div>
+  <div class="small">Just tap below 🙂</div>
+  <button class="primary" onclick="next('game')">Continue</button>
+</div>
+
+
+<!-- ===== Screen 2 : Heart chase ===== -->
+<div id="game" class="section hidden">
+  <div id="msg" class="small" style="position:absolute;top:30px;"></div>
+  <div id="heart">❤️</div>
+</div>
+
+
+<!-- ===== Screen 3 : Proposal ===== -->
+<div id="proposal" class="section hidden">
+  <div class="big">Will you be my Valentine?</div>
+
+  <div class="choice">
+    <button id="yes" class="primary">YES 💖</button>
+    <button id="no" class="secondary">NO ❤️</button>
+  </div>
+</div>
+
+
+<!-- ===== Screen 4 : Poem ===== -->
+<div id="final" class="section hidden">
+  <div class="poem">
+    <p>So stay.</p>
+    <p>Not just for today, stay for life.</p>
+
+    <p>If time ever takes everything from me,</p>
+    <p>let it never take the memory of you.</p>
+
+    <p>And when they burn me near the Ganga,</p>
+    <p>and my heart catches fire,</p>
+    <p>even the air will carry your scent.</p>
+
+    <p>Even in ash,</p>
+    <p>I’ll still belong to you.</p>
+  </div>
+</div>
+
+
+
+<script>
+/* ===== Music start after first tap ===== */
+document.body.addEventListener("click", ()=>{
+  const m=document.getElementById("bgm");
+  m.volume=.5;
+  m.play();
+},{once:true});
+
+
+/* ===== Navigation ===== */
+function next(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+
+/* ===== Heart chase game ===== */
+const heart=document.getElementById('heart');
+const msg=document.getElementById('msg');
+
+let catches=0;
+
+const lines=[
+"Too slow 😏",
+"Almost",
+"Okay you're good",
+"Fine fine…",
+"Alright you win"
+];
+
+function moveHeart(){
+  heart.style.left=Math.random()*(window.innerWidth-60)+"px";
+  heart.style.top=Math.random()*(window.innerHeight-60)+"px";
+}
+
+heart.onclick=()=>{
+  msg.innerText=lines[catches];
+  catches++;
+
+  if(catches>=5){
+    setTimeout(()=>next('proposal'),500);
+  }else{
+    moveHeart();
+  }
+};
+
+moveHeart();
+
+
+/* ===== Proposal logic ===== */
+const yes=document.getElementById('yes');
+const no=document.getElementById('no');
+
+let cracks=0;
+const states=["NO ❤️","NO 💔","NO 💢","NO 💥","NO ✨"];
+
+no.onclick=()=>{
+  cracks++;
+  no.innerText=states[Math.min(cracks,4)];
+  no.classList.add("shake");
+  setTimeout(()=>no.classList.remove("shake"),200);
+
+  yes.style.transform=`scale(${1+cracks*0.1})`;
+
+  if(cracks>=5){
+    no.style.display="none";
+  }
+};
+
+yes.onclick=()=>{
+  confetti();
+  setTimeout(()=>next('final'),700);
+};
+
+
+/* ===== Confetti ===== */
+function confetti(){
+  for(let i=0;i<40;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.innerText=['❤️','💖','✨','💘'][Math.floor(Math.random()*4)];
+    c.style.left=Math.random()*100+'vw';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),2000);
+  }
+}
+</script>
+
+</body>
+</html>
