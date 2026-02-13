@@ -13,9 +13,14 @@
   font-family:system-ui,-apple-system,sans-serif;
 }
 
+/* ===== Better gradient ===== */
 body{
   overflow:hidden;
-  background:linear-gradient(135deg,#ff9ecf,#ffd6e8);
+  background: linear-gradient(135deg,
+    #ff9ecf 0%,
+    #ffc3dc 35%,
+    #ffe4f0 70%,
+    #fff6fb 100%);
   color:#222;
 }
 
@@ -59,8 +64,14 @@ button{
   font-weight:600;
 }
 
-.primary{background:#ff2d75;color:#fff;}
-.secondary{background:#fff;}
+.primary{
+  background:#ff2d75;
+  color:#fff;
+}
+
+.secondary{
+  background:#fff;
+}
 
 /* ===== Heart Game ===== */
 #heart{
@@ -79,6 +90,7 @@ button{
 .shake{
   animation:shake .15s 2;
 }
+
 @keyframes shake{
   25%{transform:translateX(-4px)}
   50%{transform:translateX(4px)}
@@ -91,6 +103,7 @@ button{
   font-size:22px;
   animation:fall 2s linear forwards;
 }
+
 @keyframes fall{
   to{
     transform:translateY(110vh) rotate(360deg);
@@ -98,12 +111,19 @@ button{
   }
 }
 
+/* ===== Final screen glow ===== */
+#final{
+  background: radial-gradient(circle at center,
+    rgba(255,255,255,0.35),
+    transparent 70%);
+}
+
 /* ===== Poem animation ===== */
 .poem p{
   opacity:0;
-  transform:translateY(10px);
-  animation:fadeLine .7s forwards;
-  margin:6px 0;
+  transform:translateY(18px);
+  animation:fadeLine .9s cubic-bezier(.22,.61,.36,1) forwards;
+  margin:8px 0;
   max-width:320px;
 }
 
@@ -118,14 +138,21 @@ button{
 .poem p:nth-child(9){animation-delay:5.8s}
 
 @keyframes fadeLine{
-  to{opacity:1; transform:translateY(0);}
+  from{
+    opacity:0;
+    transform:translateY(18px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== Background Music ===== -->
+<!-- ===== Music (plays only on YES) ===== -->
 <audio id="bgm" src="music.mp3" loop></audio>
 
 
@@ -159,7 +186,7 @@ button{
 <div id="final" class="section hidden">
   <div class="poem">
     <p>So stay.</p>
-    <p>Not just for today, stay for life.</p>
+    <p>Not just for today — stay for life.</p>
 
     <p>If time ever takes everything from me,</p>
     <p>let it never take the memory of you.</p>
@@ -176,14 +203,6 @@ button{
 
 
 <script>
-/* ===== Music start after first tap ===== */
-document.body.addEventListener("click", ()=>{
-  const m=document.getElementById("bgm");
-  m.volume=.5;
-  m.play();
-},{once:true});
-
-
 /* ===== Navigation ===== */
 function next(id){
   document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
@@ -227,6 +246,7 @@ moveHeart();
 /* ===== Proposal logic ===== */
 const yes=document.getElementById('yes');
 const no=document.getElementById('no');
+const music=document.getElementById('bgm');
 
 let cracks=0;
 const states=["NO ❤️","NO 💔","NO 💢","NO 💥","NO ✨"];
@@ -245,6 +265,9 @@ no.onclick=()=>{
 };
 
 yes.onclick=()=>{
+  music.volume=.6;
+  music.play();
+
   confetti();
   setTimeout(()=>next('final'),700);
 };
